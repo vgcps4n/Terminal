@@ -1,1 +1,2 @@
 # Terminal
+open file.c

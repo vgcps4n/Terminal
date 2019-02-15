@@ -1,5 +1,20 @@
 #include<stdio.h>
 #include<string.h>
+#include<dirent.h>
+
+void dir(){
+	DIR *dp;
+	struct dirent *ep;
+	dp = opendir ("./");
+	if (dp != NULL){
+		while (ep = readdir (dp))
+			puts (ep->d_name);
+		(void) closedir (dp);
+    }
+	else
+		perror ("Couldn't open the directory");
+	return;
+}
 
 void create(char name[]){
 	FILE *fp;
@@ -8,35 +23,26 @@ void create(char name[]){
 	return;
 }
 
-void write(char name[]){
+bool write(char name[]){
 	FILE *fp;
 	int content;
-	fp=fopen(name, "a");
-	getchar();
+	fp = fopen(name, "r+");
+	if(fp == NULL)
+		return 0;
 	printf("Enter content: ");
 	while((content = getchar()) != '\n'){
 		putc(content, fp);
 	}
 	fclose(fp);
-	return;
+	return 1;
 }
 
-void rewrite(char name[]){
-	FILE *fp;
-	int content;
-	fp = fopen(name, "w");
-	printf("Enter content: ");
-	while((content = getchar()) != '\n'){
-		putc(content, fp);
-	}
-	fclose(fp);
-	return;
-}
-
-void print(char name[]){
+bool print(char name[]){
 	FILE *fp;
 	int c;
 	fp = fopen(name,"r");
+	if(fp == NULL)
+		return 0;
 	while(1){
 		c = fgetc(fp);
 		if(feof(fp)){
@@ -46,7 +52,7 @@ void print(char name[]){
 	}
 	fclose(fp);
 	printf("\n");
-	return;
+	return 1;
 }
 
 int newname(char name[]){
@@ -66,25 +72,28 @@ int del(char name[]){
 int main(){
 	char filename[20], cmd[10];
 	int n;
-	printf("create; rename; input; rewrite; output; delete; exit\n");
+	printf("create; rename; input; output; delete; exit\n");
 	while(1){
 		scanf("%s", cmd);
 		if(strcmp(cmd, "exit") == 0) break;
+		if(strcmp(cmd, "dir") == 0){
+			dir();
+			continue;
+		}
 		scanf("%s", filename);
 		if(strcmp(cmd, "create") == 0){
 			create(filename);
 			printf("File created.\n");
 		}
 		if(strcmp(cmd, "input") == 0){
-			write(filename);
-			printf("Content written.\n");
-		}
-		if(strcmp(cmd, "rewrite") == 0){
-			rewrite(filename);
-			printf("Content rewritten.\n");
+			if(write(filename))
+				printf("Content rewritten.\n");
+			else
+				printf("File not found.\n");
 		}
 		if(strcmp(cmd, "output") == 0){
-			print(filename);
+			if(!print(filename))
+				printf("File not found.\n");
 		}
 		if(strcmp(cmd, "rename") == 0){
 			if(newname(filename)){
@@ -100,6 +109,7 @@ int main(){
 				printf("File deleted.\n");
 			}
 		}
+		
 	}
 	return 0;
 }

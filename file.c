@@ -30,9 +30,11 @@ bool write(char name[]){
 	if(fp == NULL)
 		return 0;
 	printf("Enter content: ");
-	while((content = getchar()) != '\n'){
+	getchar();
+	do{
+		content = getchar();
 		putc(content, fp);
-	}
+	}while(content != '\n');
 	fclose(fp);
 	return 1;
 }
@@ -72,7 +74,7 @@ int del(char name[]){
 int main(){
 	char filename[20], cmd[10];
 	int n;
-	printf("create; rename; input; output; delete; exit\n");
+	printf("dir, create; rename; input; output; delete; exit\n");
 	while(1){
 		scanf("%s", cmd);
 		if(strcmp(cmd, "exit") == 0) break;
@@ -87,7 +89,7 @@ int main(){
 		}
 		if(strcmp(cmd, "input") == 0){
 			if(write(filename))
-				printf("Content rewritten.\n");
+				printf("Content written.\n");
 			else
 				printf("File not found.\n");
 		}
@@ -97,14 +99,14 @@ int main(){
 		}
 		if(strcmp(cmd, "rename") == 0){
 			if(newname(filename)){
-				printf("Error.");
+				printf("Error.\n");
 			}else{
 				printf("File renamed.\n");
 			}
 		}
 		if(strcmp(cmd, "delete") == 0){
 			if(del(filename)){
-				printf("Error.");
+				printf("Error.\n");
 			}else{
 				printf("File deleted.\n");
 			}
